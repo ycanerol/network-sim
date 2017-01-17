@@ -1,0 +1,27 @@
+
+When you get the electrode data, apply avalanche analysis
+
+log-log plot like beggs 2003 paper
+
+branching network
+
+avalanche sizes
+
+recursive network simulations:
+
+induced avalanches, random inout to one neuron
+	single input at a time
+	compare with the poisson
+
+poisson input, pick a subset and fire them, plot activity
+	pick a subset and look at output
+	define avalaches as the spikes in these subsets
+
+	also do thresholding to get output and compare
+
+definition of avalanches??
+
+no separation of avalaches in vivo, there needs to be subsampling for
+
+arxiv jens’ paper
+
