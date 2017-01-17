@@ -13,6 +13,10 @@ Based off of Beggs Plenz 2003 and Beggs Haldemann 2005 papers
 
 """
 
+import numpy as np
+import matplotlib as plt
+
+#a=np.random.random(1)
 
 
 
