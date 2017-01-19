@@ -20,13 +20,14 @@ import random
 from random import randint
 
 
-node_num = 10   # a square number is preferred --> easier for visualizatio in 2D matrix later
+node_num = 9   # a square number is preferred --> easier for visualizatio in 2D matrix later
 connection_num = 2
 initializing_node_num = 3
 
 if (node_num <= connection_num):
-    print ('more nodes than connections, pls check ur network! Default: 2 outgoing connections from each node')
-    
+    print ('more nodes than connections, pls check ur network! Default: 9 nodes, 2 outgoing connections from each node')
+    node_num = 9
+    connection_num = 2
 
 old_node_states = np.zeros (node_num) # records original statuss of nodes on = 1; off = 0
 new_node_states = np.zeros (node_num) # records statuss of nodes after info transmission on = 1; off = 0
@@ -47,14 +48,14 @@ for i in range(0,node_num):
                 node_connections[i][j] = random_list[connection_num] # re-connect to exclude self-connections
 
 
-print (node_connections)
+print ("connection matrix: \n", node_connections)
             
 # setting probabilities for each connection, to make sigma = 1, sum p_connections from i should = 1!
 for i in range(0,node_num):
     for j in range (0, connection_num):
             p_connections[i][j] = random.random()          
 
-print (p_connections)
+print ("transmission probability matrix: \n", p_connections)
 
 #%%
 # initializing the network with active nodes
@@ -67,7 +68,7 @@ for i in active_nodes:
             old_node_states[i] = 1  #activate the network
             
 #new_node_states = old_node_states # get the new states ready
-print (old_node_states)
+print ("original network: \n", old_node_states)
 
 
 #%%
@@ -90,7 +91,7 @@ for j in range (0,connection_num):
     for i in range(0,node_num):
         connection_transmission[i][j] = if_connect(random.random(), p_connections[i][j])
         
-print (connection_transmission)        
+print ("connection transmission: \n", connection_transmission)        
 
 
 #assign values to nodes after one round
@@ -108,18 +109,8 @@ for j in range (0,connection_num):
             new_node_states[node_connections[i][j]] = 0
         #print (new_node_states)
 
-print (new_node_states)
+print ("network after " + str(t) + "rounds of activity transmission: \n", new_node_states)
         
-"""
-for i in range(0,node_num): #setting new values for each node according to threshold
-
-    if (sum_input[i] >= threshold):
-        network1[network1[i][int(node_info / 2) + 1]][0] = 1
-    else:
-        network1[network1[i][int(node_info / 2) + 1]][0] = 0
-        
-print (network1)
-"""
 
 #%%
 # let's visualize our network in a 2D matrix!
