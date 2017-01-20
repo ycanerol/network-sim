@@ -55,15 +55,14 @@ for i in range(node_nr):
 
 tr_probabilities=[[] for i in range(node_nr)]
 for i in range(node_nr):
-    for j in range(len(nodes[i])):
-        divider=list(np.sort(np.random.random_sample(connections-1)))
-        divider.insert(0,0)
-        divider.insert(len(divider),1)
-        divider=np.multiply(divider,sigma) #Scale the interval to be the size of sigma
-        for k in range(1,connections):
-            tr_probabilities[i].append(divider[k]-divider[k-1])
+    divider=list(np.sort(np.random.random_sample(connections-1)))
+    divider.insert(0,0)
+    divider.insert(len(divider),1)
+    divider=list(np.multiply(divider,sigma)) #Scale the interval to be the size of sigma
+    for k in range(1,len(divider)):
+        tr_probabilities[i].append(divider[k]-divider[k-1])
         #The constraint is that for each node sigma_i should be equal to sigma
         #Sums of the probabilities for one node should be sigma
         #For this, we divide the sigma into C parts and use the sizes of the parts as probabilities
         
-        
+
