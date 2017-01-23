@@ -21,9 +21,12 @@ from random import shuffle
 #Enter and change parameters here
 
 node_nr=64
-#avg_connection_per_node=node_nr/10  #To be changed, this is a coarse determination
 connections=4   #Defined as C in the paper
 sigma=1.2
+
+#For time iterations
+time_steps=50 #How many times we transmit
+spont_prob=0.001 #Proabability of  spontaneous activation of connections
 
 #%%
 def set_array(node_nr):     #Function to set an array of empty arrays
@@ -75,7 +78,7 @@ while flag:
                 all_less_than1=False
     if all_less_than1:
         flag=False
-    if prob_iteration_count>10000:
+    if prob_iteration_count>10000: #Deals with the case that C and sigma are inappropriate, prevents infinite loop
         raise ValueError('More than 10.000 iterations when setting up probabilities, terminating. There are >1 probabilities.')
         break
     prob_iteration_count+=1
@@ -83,23 +86,21 @@ del j,k,a,divider,flag
 #The network is set up with required properties at this point
 
 #%% Incorporating time and inputs
-time_steps=50 #How many times we transmit
-spont_prob=0.001
 
-outputs=list(np.zeros(node_nr))
+outputs=list(np.zeros(node_nr)) #Holds the state of each node.
 
 for t in range(time_steps):
     
-    inputs=outputs
-    outputs=list(np.zeros(node_nr))
+    inputs=outputs #The outputs of the previous iteration are inputs of current.
+    outputs=list(np.zeros(node_nr)) 
     
     for i in range(node_nr):
         for k in range(connections):
             if np.random.random()<spont_prob:              
                 outputs[nodes[i][k]]=1
-            elif inputs[i]:
-                if np.random.random()<tr_probabilities[i][k]:
-                    outputs[nodes[i][k]]=1
+            elif inputs[i] and np.random.random()<tr_probabilities[i][k]:
+                outputs[nodes[i][k]]=1  #No else statement so if the same node was activated 
+                                        #by another connection, it will not be changed.
         if outputs[i]:
             print('t={:3.0f},i={:2.0f}'.format(t,i))
             
