@@ -26,7 +26,7 @@ connections=4   #Defined as C in the paper
 sigma=1.2
 
 #%%
-def set_array(node_nr):     #Function to set array of empty arrays
+def set_array(node_nr):     #Function to set an array of empty arrays
     a=[[]for a in range(node_nr)]
     return a
 
@@ -55,6 +55,7 @@ for i in range(node_nr):
         
 #We established a recurrent network, we need to establish transmission proabability for each connection
 flag=True
+prob_iteration_count=0
 while flag:
     tr_probabilities=set_array(node_nr)
     for i in range(node_nr):
@@ -74,7 +75,10 @@ while flag:
                 all_less_than1=False
     if all_less_than1:
         flag=False
-                       
+    if prob_iteration_count>10000:
+        raise ValueError('More than 10.000 iterations when setting up probabilities, terminating. There are >1 probabilities.')
+        break
+    prob_iteration_count+=1
 del j,k,a,divider,flag
 #The network is set up with required properties at this point
 
@@ -82,37 +86,22 @@ del j,k,a,divider,flag
 time_steps=50 #How many times we transmit
 spont_prob=0.001
 
-def transmit(prob):
-    for i in range(len(prob)):
-        if np.random.random()<prob[i]:
-            return 1
-        else:
-            return 0
-            
-def activate(prob,inputs):
-    pass
-
-outputs=[list(np.zeros(connections)) for i in range(node_nr)]
+outputs=list(np.zeros(node_nr))
 
 for t in range(time_steps):
     
     inputs=outputs
-    outputs=[list(np.zeros(connections)) for i in range(node_nr)]
+    outputs=list(np.zeros(node_nr))
     
-#    for i in range(node_nr):   #Generating a spontaneous input pattern
-#        for k in range(connections):
-#            if np.random.random()<spont_prob:
-#                inputs[i][k]=1
-#            else:
-#                inputs[i][k]=0     #
-
     for i in range(node_nr):
         for k in range(connections):
-            if np.random.random()<spont_prob:
-                outputs[i][k]=1
-            elif inputs[i][k]:
+            if np.random.random()<spont_prob:              
+                outputs[nodes[i][k]]=1
+            elif inputs[i]:
                 if np.random.random()<tr_probabilities[i][k]:
-                    outputs[i][k]=1
+                    outputs[nodes[i][k]]=1
+        if outputs[i]:
+            print('t={:3.0f},i={:2.0f}'.format(t,i))
             
             
         
