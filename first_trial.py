@@ -15,20 +15,21 @@ Based off of Beggs Plenz 2003 and Beggs Haldemann 2005 papers
 
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib
-from matplotlib import colors
 from random import shuffle
 
 #Initialization
 #Enter and change parameters here
 
-node_nr=100
+node_nr=100 #should be a square for plotting
 connections=4   #Defined as C in the paper
 sigma=1
 
 #For time iterations
 time_steps=200 #How many times we transmit
 spont_prob=0.001 #Proabability of  spontaneous activation of connections
+
+plot_and_save=True #Should we plot and save the activation patterns? 
+                    #Won't be neccesary for generating data for log-log plots
 
 #%%
 def set_array(node_nr):     #Function to set an array of empty arrays
@@ -109,23 +110,18 @@ for t in range(time_steps):
             activated.append([t,i])   
             
     #%% plotting
-  
-    # split the 1D array into square 2D 
-    def split(array, n):
-        two_d_array = []
-        for i in range(0, len(array), n):
-            two_d_array.append(list(array[i:i + n]))
-            #print(i)
-        
-        return list(two_d_array)
-        
-    network = split(outputs, int(np.sqrt(node_nr)))    
     
-    #plot & save img for this round 
-    img = plt.matshow(network, cmap="Greys")
-       
-    plt.savefig('/Users/ycan/Documents/projects/network-sim-pics/'+"{0:0>3}".format(str(t))+'.jpg')
-    plt.close()
+    #plot & save img for this round
+    if plot_and_save:
+        node_nr_sqrt=int(np.sqrt(node_nr))  #Get the one vertex of the square to plot
+        img = plt.matshow(np.reshape(outputs,[node_nr_sqrt,node_nr_sqrt]), cmap="Greys")
+                #Convert to a square matrix and plot      
+        
+        plt.savefig('/Users/ycan/Documents/projects/network-sim-pics/'+"{0:0>3}".format(str(t))+'.jpg')
+        plt.close()
+    
+    #Use ImageJ to generate .avi file from the images.
+    #Also possible with cv2 or matplotlib but requires more work.
 
                 
 #%% 
