@@ -20,12 +20,12 @@ from random import shuffle
 #Initialization
 #Enter and change parameters here
 
-node_nr=64
+node_nr=100
 connections=4   #Defined as C in the paper
-sigma=1.2
+sigma=1
 
 #For time iterations
-time_steps=50 #How many times we transmit
+time_steps=500 #How many times we transmit
 spont_prob=0.001 #Proabability of  spontaneous activation of connections
 
 #%%
@@ -88,6 +88,7 @@ del j,k,a,divider,flag
 #%% Incorporating time and inputs
 
 outputs=list(np.zeros(node_nr)) #Holds the state of each node.
+activated=[]
 
 for t in range(time_steps):
     
@@ -102,10 +103,49 @@ for t in range(time_steps):
                 outputs[nodes[i][k]]=1  #No else statement so if the same node was activated 
                                         #by another connection, it will not be changed.
         if outputs[i]:
-            print('t={:3.0f},i={:2.0f}'.format(t,i))
-            
+            #print('t={:3.0f},i={:2.0f}'.format(t,i))
+            activated.append([t,i])             
+#%% 
+
+def get_avalanches(array):  #Returns sizes of avalanches. Can be modified for time intervals for plotting
+    times=[]
+    avalanche_sizes=[]
+    time_ranges=[]
+    
+    for i in range(len(array)): #Get activation as an array without duplicates
+        if i==0: 
+            times.append(array[i][0])  
+        elif array[i][0]!=array[i-1][0]:
+            times.append(array[i][0])
+   
+    #Get the time ranges for avalanches
+    #Time ranges can later be used for plotting too.        
+    first = last = times[0]
+    for n in times[1:]:
+        if n - 1 == last: # Part of the group, bump the end
+            last = n
+        else: # Not part of the group, yield current group and start a new
+            time_ranges.append([first, last])
+            first = last = n
+    time_ranges.append([first, last]) # Yield the last group
+    
+    #Calculate avalanche sizes from time ranges
+    for i in time_ranges:
+        avalanche_sizes.append(i[1]-i[0]+1)
+
+    return avalanche_sizes    
+    
+a=get_avalanches(activated)    
+print(a)    
+#%%
+    
+     
+                
             
         
+                
+        
+
         
         
         
