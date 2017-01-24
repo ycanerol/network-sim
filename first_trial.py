@@ -14,7 +14,9 @@ Based off of Beggs Plenz 2003 and Beggs Haldemann 2005 papers
 """
 
 import numpy as np
-import matplotlib as plt
+import matplotlib.pyplot as plt
+import matplotlib
+from matplotlib import colors
 from random import shuffle
 
 #Initialization
@@ -25,7 +27,7 @@ connections=4   #Defined as C in the paper
 sigma=1
 
 #For time iterations
-time_steps=500 #How many times we transmit
+time_steps=200 #How many times we transmit
 spont_prob=0.001 #Proabability of  spontaneous activation of connections
 
 #%%
@@ -104,7 +106,28 @@ for t in range(time_steps):
                                         #by another connection, it will not be changed.
         if outputs[i]:
             #print('t={:3.0f},i={:2.0f}'.format(t,i))
-            activated.append([t,i])             
+            activated.append([t,i])   
+            
+    #%% plotting
+  
+    # split the 1D array into square 2D 
+    def split(array, n):
+        two_d_array = []
+        for i in range(0, len(array), n):
+            two_d_array.append(list(array[i:i + n]))
+            #print(i)
+        
+        return list(two_d_array)
+        
+    network = split(outputs, int(np.sqrt(node_nr)))    
+    
+    #plot & save img for this round 
+    img = plt.matshow(network, cmap="Greys")
+       
+    plt.savefig('/Users/ycan/Documents/projects/network-sim-pics/'+"{0:0>3}".format(str(t))+'.jpg')
+    plt.close()
+
+                
 #%% 
 
 def get_avalanches(array):  #Returns sizes of avalanches. Can be modified for time intervals for plotting
@@ -137,8 +160,7 @@ def get_avalanches(array):  #Returns sizes of avalanches. Can be modified for ti
     
 a=get_avalanches(activated)    
 print(a)    
-#%%
-    
+
      
                 
             
