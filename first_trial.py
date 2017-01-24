@@ -117,7 +117,9 @@ for t in range(time_steps):
         img = plt.matshow(np.reshape(outputs,[node_nr_sqrt,node_nr_sqrt]), cmap="Greys")
                 #Convert to a square matrix and plot      
         
-        plt.savefig('/Users/ycan/Documents/projects/network-sim-pics/'+"{0:0>3}".format(str(t))+'.jpg')
+        images_savedir='/Users/ycan/Documents/projects/network-sim-pics/'
+        
+        plt.savefig(images_savedir+"{0:0>3}".format(str(t))+'.jpg')
         plt.close()
     
     #Use ImageJ to generate .avi file from the images.
@@ -154,8 +156,8 @@ def get_avalanches(array):  #Returns sizes of avalanches. Can be modified for ti
 
     return avalanche_sizes    
     
-a=get_avalanches(activated)    
-print(a)    
+avalanche_sizes=get_avalanches(activated)    
+print(avalanche_sizes)
 
      
                 
