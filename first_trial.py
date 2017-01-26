@@ -54,7 +54,7 @@ def get_avalanches(array):  # Returns sizes and length (in number of frames) of 
         elif array[i][0]!=array[i-1][0]:
             times.append(array[i][0])
         
-        if array[i][0]-array[i-1][0]<=1:    # If we are stil in an avalanche, add 1 for each activated node
+        if array[i][0]-array[i-1][0]<=1: # If we are stil in an avalanche, add 1 for each activated node for avalanche sizes
             avalanche_sizes[-1]+=1
         else:
             avalanche_sizes.append(1) # If we exit an avalanche, start counting the size of the next one
