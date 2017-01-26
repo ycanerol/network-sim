@@ -73,6 +73,12 @@ def get_avalanches(array):  # Returns sizes of avalanches. Can be modified for t
 #%% Running many simulations    
 all_avalanche_sizes=[]
 
+if plot_and_save and number_of_simulations>1: # Many write cycles is undesirable, catch if this happens
+    print('Plot and save is active and many simulations will be run. \nThis will write many times on your disk with no result. Please turn off plotting.')
+    input('Press ENTER to continue with one round of simulation or CTRL+C to stop the script.\n')
+    number_of_simulations=1
+    
+#%%
 for i in range(number_of_simulations): 
     #%% Generating the network
     nodes=set_array(node_nr)
