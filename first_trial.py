@@ -20,18 +20,18 @@ from random import shuffle
 # Initialization
 # Enter and change parameters here
 
-node_nr=100 # Should be a square for plotting
+node_nr=64 # Should be a square for plotting
 connections=4   # Defined as C in the paper
 sigma=1
 
 # For time iterations
-time_steps=500 # How many times we transmit
+time_steps=200 # How many times we transmit
 spont_prob=0.001 # Proabability of  spontaneous activation of connections
 
 plot_and_save=False # Should we plot and save the activation patterns? 
                     # Won't be neccesary for generating data for log-log plots
                     
-number_of_simulations=200   # Make sure plot_and_save is False if you're running many simulations.                    
+number_of_simulations=2000   # Make sure plot_and_save is False if you're running many simulations.                    
                     
 log_plot_base=10    # Changes the base of the log-log plots on both axes
                     # Any base should give the same results       
@@ -161,12 +161,8 @@ for i in range(number_of_simulations):
         
         # Use ImageJ to generate .avi file from the images.
         # Also possible with cv2 or matplotlib but requires more work.
-    
-                    
  
-#%% Gathering avalanches
-    
-        
+#%% Gathering avalanches        
     avalanche_sizes=get_avalanches(activated)    
     all_avalanche_sizes=all_avalanche_sizes+avalanche_sizes
     
@@ -179,6 +175,7 @@ log_max=np.log(max(all_avalanche_sizes))/np.log(log_plot_base)
 plt.hist(all_avalanche_sizes,bins=np.logspace(0,log_max,base=log_plot_base))
 plt.xscale('log',basex=log_plot_base)
 plt.yscale('log',basey=log_plot_base)
+plt.axvline(x=node_nr,linestyle='--',color="r")
 plt.show()
 
 
