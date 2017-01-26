@@ -41,9 +41,11 @@ def set_array(node_nr):     # Function to set an array of empty arrays
     a=[[]for a in range(node_nr)]
     return a
 
-def get_avalanches(array):  # Returns sizes of avalanches. Can be modified for time intervals for plotting
+def get_avalanches(array):  # Returns sizes and length (in number of frames) of avalanches
+                            # Avalanche size is defined as number of activated nodes in one avalanche
     times=[]
-    avalanche_sizes=[]
+    avalanche_sizes=[0] # Initialize the first avalanche size as 0, the first iteration will add 1
+    avalanche_frame_lengths=[]
     time_ranges=[]
     
     for i in range(len(array)): # Get activation as an array without duplicates
@@ -51,6 +53,11 @@ def get_avalanches(array):  # Returns sizes of avalanches. Can be modified for t
             times.append(array[i][0])  
         elif array[i][0]!=array[i-1][0]:
             times.append(array[i][0])
+        
+        if array[i][0]-array[i-1][0]<=1:    # If we are stil in an avalanche, add 1 for each activated node
+            avalanche_sizes[-1]+=1
+        else:
+            avalanche_sizes.append(1) # If we exit an avalanche, start counting the size of the next one
    
     # Get the time ranges for avalanches
     # Time ranges can later be used for plotting too.        
@@ -65,13 +72,14 @@ def get_avalanches(array):  # Returns sizes of avalanches. Can be modified for t
     
     #Calculate avalanche sizes from time ranges
     for i in time_ranges:
-        avalanche_sizes.append(i[1]-i[0]+1)
+        avalanche_frame_lengths.append(i[1]-i[0]+1)
 
-    return avalanche_sizes        
+    return avalanche_frame_lengths,avalanche_sizes        
 
 
 #%% Running many simulations    
 all_avalanche_sizes=[]
+all_avalanche_frame_lengths=[]
 
 if plot_and_save and number_of_simulations>1: # Many write cycles is undesirable, catch if this happens
     print('Plot and save is active and many simulations will be run. \nThis will write many times on your disk with no result. Please turn off plotting.')
@@ -169,19 +177,29 @@ for i in range(number_of_simulations):
         # Also possible with cv2 or matplotlib but requires more work.
  
 #%% Gathering avalanches        
-    avalanche_sizes=get_avalanches(activated)    
+    avalanche_frame_lengths,avalanche_sizes=get_avalanches(activated)    
+    all_avalanche_frame_lengths=all_avalanche_frame_lengths+avalanche_frame_lengths
     all_avalanche_sizes=all_avalanche_sizes+avalanche_sizes
     
-print("{:<5} simulations ran, {:<5} data points were generated.".format(number_of_simulations,len(all_avalanche_sizes)))    
+print("{:<5} simulations ran, {:<5} frame lengths were generated.".format(number_of_simulations,len(avalanche_frame_lengths)))    
 
-#%% Generating lol-log plot, Avalanche lengths histogram
+#%% Generating log-log plot, Avalanche frame lengths histogram
 
-log_max=np.log(max(all_avalanche_sizes))/np.log(log_plot_base)
+log_max_frames=np.log(max(all_avalanche_frame_lengths))/np.log(log_plot_base)
 # Define the upper border for x axis bins                
-plt.hist(all_avalanche_sizes,bins=np.logspace(0,log_max,base=log_plot_base))
+plt.hist(all_avalanche_frame_lengths,bins=np.logspace(0,log_max_frames,base=log_plot_base))
 plt.xscale('log',basex=log_plot_base)
 plt.yscale('log',basey=log_plot_base)
-plt.axvline(x=node_nr,linestyle='--',color="r")
+plt.axvline(x=node_nr,linestyle='--',color="r") # node_nr should be the end of power law relationship
+plt.title('Avalanche frame lengths histogram in log-log axes')
 plt.show()
 
-
+#%% log-log plot for Avalanche sizes
+log_max_sizes=np.log(max(all_avalanche_sizes))/np.log(log_plot_base)
+# Define the upper border for x axis bins                
+plt.hist(all_avalanche_sizes,bins=np.logspace(0,log_max_sizes,base=log_plot_base),color='g')
+plt.xscale('log',basex=log_plot_base)
+plt.yscale('log',basey=log_plot_base)
+#plt.axvline(x=node_nr,linestyle='--',color="r") # Line should be somewhere other than node_nr but where?
+plt.title('Avalanche sizes histogram in log-log axes')
+plt.show()
