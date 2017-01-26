@@ -30,6 +30,11 @@ spont_prob=0.001 #Proabability of  spontaneous activation of connections
 
 plot_and_save=False #Should we plot and save the activation patterns? 
                     #Won't be neccesary for generating data for log-log plots
+                    
+number_of_simulations=200   #Make sure plot_and_save is False if you're running many simulations.                    
+                    
+log_plot_base=10    #Changes the base of the log-log plots on both axes
+                    #Any base should give the same results       
 
 #%%Functions
 def set_array(node_nr):     #Function to set an array of empty arrays
@@ -67,8 +72,6 @@ def get_avalanches(array):  #Returns sizes of avalanches. Can be modified for ti
 
 #%% Running many simulations    
 all_avalanche_sizes=[]
-number_of_simulations=200   #Make sure plot_and_save is False if you're running many simulations.
-
 
 for i in range(number_of_simulations): 
     #%% Generating the network
@@ -145,13 +148,13 @@ for i in range(number_of_simulations):
                 #print('t={:3.0f},i={:2.0f}'.format(t,i))
                 activated.append([t,i])   
                 
-        #%% plotting
+        #%% Plotting individual frames
         
-        #plot & save img for this round
+        # Plot individial frames & save img for each round
         if plot_and_save:
             node_nr_sqrt=int(np.sqrt(node_nr))  #Get the one vertex of the square to plot
             img = plt.matshow(np.reshape(outputs,[node_nr_sqrt,node_nr_sqrt]), cmap="Greys")
-                    #Convert to a square matrix and plot      
+            #Convert to a square matrix and plot      
             
             images_savedir='/Users/ycan/Documents/projects/network-sim-pics/'
             
@@ -162,8 +165,8 @@ for i in range(number_of_simulations):
         #Also possible with cv2 or matplotlib but requires more work.
     
                     
-    #%% 
-    
+ 
+#%% Gathering avalanches
     
         
     avalanche_sizes=get_avalanches(activated)    
@@ -171,24 +174,13 @@ for i in range(number_of_simulations):
     
 print("{:<5} simulations ran, {:<5} data points were generated.".format(number_of_simulations,len(all_avalanche_sizes)))    
 
+#%% Generating lol-log plot, Avalanche lengths histogram
 
-
-#%%Trial 1
-log_max=np.log10(max(all_avalanche_sizes))
-img=plt.hist(all_avalanche_sizes,bins=np.logspace(0,log_max),log=True)
-img.show()
-
-#%% Trial 2
-log_max=np.log10(max(all_avalanche_sizes))
-plt.figure()
-plt.hist(all_avalanche_sizes,bins=10**np.linspace(np.log10(0),log_max))
-plt.gca().set_xscale("log")
-plt.show()
-
-#%% Trial 3
-bins = range(0, max(all_avalanche_sizes))
-#plt.xticks(bins, ["2^%s" % i for i in bins])
-plt.hist(np.log10(all_avalanche_sizes), log=True, bins=bins)
+log_max=np.log(max(all_avalanche_sizes))/np.log(log_plot_base)
+# Define the upper border for x axis bins                
+plt.hist(all_avalanche_sizes,bins=np.logspace(0,log_max,base=log_plot_base))
+plt.xscale('log',basex=log_plot_base)
+plt.yscale('log',basey=log_plot_base)
 plt.show()
 
 
