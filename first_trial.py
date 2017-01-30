@@ -22,7 +22,7 @@ from random import shuffle
 # Initialization
 # Enter and change parameters here
 
-node_nr=64 # Should be a square for plotting
+node_nr=64*64 # Should be a square for plotting
 connections=4   # Defined as C in the paper
 sigma=1
 
@@ -195,7 +195,8 @@ plt.xlabel('Avalanche frame length')
 plt.yscale('log',basey=log_plot_base)
 plt.ylabel('Number of occurences')
 plt.axvline(x=node_nr,linestyle='--',color="r",label='Node number') # node_nr should be the end of power law relationship
-plt.title('Avalanche frame lengths histogram in log-log axes\n $\sigma$ = {}, Number of runs= {}'.format(sigma,number_of_simulations))
+plt.suptitle('Avalanche frame lengths histogram in log-log axes',fontsize=12,x=0.5,y=1.05)
+plt.title('$\sigma$ = {}, Number of runs= {},\n Time steps={} ,Connection per node={}'.format(sigma,number_of_simulations,time_steps,connections),fontsize=10)
 plt.show()
 
     #%% log-log plot for Avalanche sizes
@@ -207,5 +208,6 @@ plt.xscale('log',basex=log_plot_base)
 plt.ylabel('Number of occurences')
 plt.yscale('log',basey=log_plot_base)
 #plt.axvline(x=node_nr,linestyle='--',color="r") # Line should be somewhere other than node_nr but where?
-plt.title('Avalanche sizes histogram in log-log axes\n $\sigma$ = {}, Number of runs= {}'.format(sigma,number_of_simulations))
+plt.suptitle('Avalanche sizes histogram in log-log axes',fontsize=12,x=0.5,y=1.05)
+plt.title('$\sigma$ = {}, Number of runs= {},\n Time steps={} ,Connection per node={}'.format(sigma,number_of_simulations,time_steps,connections),fontsize=10)
 plt.show()
