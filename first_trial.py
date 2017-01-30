@@ -13,10 +13,12 @@ Based off of Beggs Plenz 2003 and Beggs Haldemann 2005 papers
 
 """
 
+
 import numpy as np
 import matplotlib.pyplot as plt
 from random import shuffle
 
+#%%
 # Initialization
 # Enter and change parameters here
 
@@ -31,7 +33,7 @@ spont_prob=0.001 # Proabability of  spontaneous activation of connections
 plot_and_save=False # Should we plot and save the activation patterns? 
                     # Won't be neccesary for generating data for log-log plots
                     
-number_of_simulations=2000   # Make sure plot_and_save is False if you're running many simulations.                    
+number_of_simulations=200   # Make sure plot_and_save is False if you're running many simulations.                    
                     
 log_plot_base=10    # Changes the base of the log-log plots on both axes
                     # Any base should give the same results       
@@ -189,17 +191,21 @@ log_max_frames=np.log(max(all_avalanche_frame_lengths))/np.log(log_plot_base)
 # Define the upper border for x axis bins                
 plt.hist(all_avalanche_frame_lengths,bins=np.logspace(0,log_max_frames,base=log_plot_base))
 plt.xscale('log',basex=log_plot_base)
+plt.xlabel('Avalanche frame length')
 plt.yscale('log',basey=log_plot_base)
-plt.axvline(x=node_nr,linestyle='--',color="r") # node_nr should be the end of power law relationship
-plt.title('Avalanche frame lengths histogram in log-log axes')
+plt.ylabel('Number of occurences')
+plt.axvline(x=node_nr,linestyle='--',color="r",label='Node number') # node_nr should be the end of power law relationship
+plt.title('Avalanche frame lengths histogram in log-log axes\n $\sigma$ = {}, Number of runs= {}'.format(sigma,number_of_simulations))
 plt.show()
 
-#%% log-log plot for Avalanche sizes
+    #%% log-log plot for Avalanche sizes
 log_max_sizes=np.log(max(all_avalanche_sizes))/np.log(log_plot_base)
 # Define the upper border for x axis bins                
 plt.hist(all_avalanche_sizes,bins=np.logspace(0,log_max_sizes,base=log_plot_base),color='g')
+plt.xlabel('Avalanche sizes')
 plt.xscale('log',basex=log_plot_base)
+plt.ylabel('Number of occurences')
 plt.yscale('log',basey=log_plot_base)
 #plt.axvline(x=node_nr,linestyle='--',color="r") # Line should be somewhere other than node_nr but where?
-plt.title('Avalanche sizes histogram in log-log axes')
+plt.title('Avalanche sizes histogram in log-log axes\n $\sigma$ = {}, Number of runs= {}'.format(sigma,number_of_simulations))
 plt.show()
