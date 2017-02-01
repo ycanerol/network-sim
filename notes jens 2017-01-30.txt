@@ -1,0 +1,8 @@
+64x64, C=4
+
+look at tr_probababilties, look at their distribution, is it uniform
+
+weird for avalanche sizes
+
+sigma/4, not random assignment
+

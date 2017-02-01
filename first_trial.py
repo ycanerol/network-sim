@@ -13,10 +13,12 @@ Based off of Beggs Plenz 2003 and Beggs Haldemann 2005 papers
 
 """
 
+
 import numpy as np
 import matplotlib.pyplot as plt
 from random import shuffle
 
+#%%
 # Initialization
 # Enter and change parameters here
 
@@ -31,10 +33,13 @@ spont_prob=0.001 # Proabability of  spontaneous activation of connections
 plot_and_save=False # Should we plot and save the activation patterns? 
                     # Won't be neccesary for generating data for log-log plots
                     
-number_of_simulations=2000   # Make sure plot_and_save is False if you're running many simulations.                    
+number_of_simulations=20000   # Make sure plot_and_save is False if you're running many simulations.                    
                     
 log_plot_base=10    # Changes the base of the log-log plots on both axes
-                    # Any base should give the same results       
+                    # Any base should give the same results
+                    
+uniform_tr_prob=False # In the paper, they have used 1/sigma for all transmission probabilities
+                      # trying with the same method. Our normal method generates a lot of variation                
 
 #%% Functions
 def set_array(node_nr):     # Function to set an array of empty arrays
@@ -81,6 +86,7 @@ def get_avalanches(array):  # Returns sizes and length (in number of frames) of 
 all_avalanche_sizes=[]
 all_avalanche_frame_lengths=[]
 
+
 if plot_and_save and number_of_simulations>1: # Many write cycles is undesirable, catch if this happens
     print('Plot and save is active and many simulations will be run. \nThis will write many times on your disk with no result. Please turn off plotting.')
     input('Press ENTER to continue with one round of simulation or CTRL+C to stop the script.\n')
@@ -113,6 +119,12 @@ for i in range(number_of_simulations):
     #%% Setting up transmission probabilities        
     # We established a recurrent network, we need to establish transmission proabability for each connection
     flag=True
+    
+    if uniform_tr_prob: # The way it is used in the paper is uniform, all connections have equal proabability transmission
+        flag=False
+        tr_probabilities=[[sigma/connections for j in range(connections)] for i in range(node_nr)]
+    
+    
     prob_iteration_count=0
     while flag:
         tr_probabilities=set_array(node_nr)
@@ -137,9 +149,9 @@ for i in range(number_of_simulations):
             raise ValueError('More than 10.000 iterations when setting up probabilities, terminating. There are >1 probabilities.')
             break
         prob_iteration_count+=1
-    del j,k,a,divider,flag
+    #del j,k,a,divider,flag
     # The network is set up with required properties at this point
-    
+        
     #%% Incorporating time and inputs
     
     outputs=list(np.zeros(node_nr)) # Holds the state of each node.
@@ -184,22 +196,28 @@ for i in range(number_of_simulations):
 print("{:<5} simulations ran, {:<5} frame lengths were generated.".format(number_of_simulations,len(avalanche_frame_lengths)))    
 
 #%% Generating log-log plot, Avalanche frame lengths histogram
-
-log_max_frames=np.log(max(all_avalanche_frame_lengths))/np.log(log_plot_base)
-# Define the upper border for x axis bins                
-plt.hist(all_avalanche_frame_lengths,bins=np.logspace(0,log_max_frames,base=log_plot_base))
-plt.xscale('log',basex=log_plot_base)
-plt.yscale('log',basey=log_plot_base)
-plt.axvline(x=node_nr,linestyle='--',color="r") # node_nr should be the end of power law relationship
-plt.title('Avalanche frame lengths histogram in log-log axes')
-plt.show()
-
-#%% log-log plot for Avalanche sizes
-log_max_sizes=np.log(max(all_avalanche_sizes))/np.log(log_plot_base)
-# Define the upper border for x axis bins                
-plt.hist(all_avalanche_sizes,bins=np.logspace(0,log_max_sizes,base=log_plot_base),color='g')
-plt.xscale('log',basex=log_plot_base)
-plt.yscale('log',basey=log_plot_base)
-#plt.axvline(x=node_nr,linestyle='--',color="r") # Line should be somewhere other than node_nr but where?
-plt.title('Avalanche sizes histogram in log-log axes')
-plt.show()
+if not plot_and_save:
+    log_max_frames=np.log(max(all_avalanche_frame_lengths))/np.log(log_plot_base)
+    # Define the upper border for x axis bins                
+    plt.hist(all_avalanche_frame_lengths,bins=np.logspace(0,log_max_frames,base=log_plot_base))
+    plt.xscale('log',basex=log_plot_base)
+    plt.xlabel('Avalanche frame length')
+    plt.yscale('log',basey=log_plot_base)
+    plt.ylabel('Number of occurences')
+    plt.axvline(x=node_nr,linestyle='--',color="r",label='Node number') # node_nr should be the end of power law relationship
+    plt.suptitle('Avalanche frame lengths histogram in log-log axes',fontsize=12,x=0.5,y=1.05)
+    plt.title('$\sigma$ = {}, Number of runs= {}, Number of nodes= {}\n Time steps= {} ,Connection per node= {}'.format(sigma,number_of_simulations,node_nr,time_steps,connections),fontsize=10)
+    plt.show()
+    
+        #%% log-log plot for Avalanche sizes
+    log_max_sizes=np.log(max(all_avalanche_sizes))/np.log(log_plot_base)
+    # Define the upper border for x axis bins                
+    plt.hist(all_avalanche_sizes,bins=np.logspace(0,log_max_sizes,base=log_plot_base),color='g')
+    plt.xlabel('Avalanche sizes')
+    plt.xscale('log',basex=log_plot_base)
+    plt.ylabel('Number of occurences')
+    plt.yscale('log',basey=log_plot_base)
+    #plt.axvline(x=node_nr,linestyle='--',color="r") # Line should be somewhere other than node_nr but where?
+    plt.suptitle('Avalanche sizes histogram in log-log axes',fontsize=12,x=0.5,y=1.05)
+    plt.title('$\sigma$ = {}, Number of runs= {}, Number of nodes= {}\n Time steps= {} ,Connection per node= {}'.format(sigma,number_of_simulations,node_nr,time_steps,connections),fontsize=10)
+    plt.show()
