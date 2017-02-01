@@ -24,7 +24,7 @@ import sys
 from matplotlib import colors
 
 
-row = 64
+row = 32
 node_num = row * row   # a square number is preferred --> easier for visualizatio in 2D matrix later
 connection_num = 4
 
@@ -303,7 +303,8 @@ while exp_count < experiment_num:
         
             
     
-    exp_count += 1    
+    exp_count += 1   
+    print('finished experiment ' + str(exp_count))
     
 
 #%%
@@ -319,14 +320,15 @@ while exp_count < experiment_num:
 length_num_powerbin = np.histogram(avalanche_lengths, bins=np.logspace(0, np.log10(max(avalanche_lengths)), base=10.0), density=False)[0]
 length_num_powerbin_edges = np.histogram(avalanche_lengths, bins=np.logspace(0, np.log10(max(avalanche_lengths)), base=10.0), density=False)[1]
 #length_num_powerbin = np.histogram(avalanche_lengths, bins=np.logspace(0, max(avalanche_lengths), base=10.0))[0]
-plt.loglog(np.linspace(0,max(avalanche_lengths), num=len(length_num_powerbin)), length_num_powerbin,'o',basex=10,basey=10)
+#plt.loglog(np.linspace(0,max(avalanche_lengths), num=len(length_num_powerbin)), length_num_powerbin,'o',basex=10,basey=10)
+plt.loglog(length_num_powerbin_edges[1:], length_num_powerbin,'o',basex=10,basey=10)
 plt.xlim(-1, max(avalanche_lengths)+100) 
 plt.axvline(x=t,linestyle='--',color="r") # node_nr should be the end of power law relationship
 #plt.loglog(length_num_powerbin,'o',basex=10,basey=10)
-plt.title('avalanche lengths, nodes:'+ str(node_num) + '\n exp:'+ str(experiment_num) + '\n steps:' + str(t) + '\n sigma:' + str(sigma))
+plt.title('avalanche lengths, nodes:'+ str(node_num) + '\n exp:'+ str(experiment_num) + '\n steps:' + str(t) + '\n sigma:' + str(sigma) + '\n p_spont:' + str(p_spontaneous))
 
 plt.show()
-print("length_num_powerbin: \n", length_num_powerbin)
+#print("length_num_powerbin: \n", length_num_powerbin)
 
 #plt.savefig('/Users/zhoulinn/python/network-sim-pics/avalanche_lengths')
 
@@ -335,14 +337,15 @@ print("length_num_powerbin: \n", length_num_powerbin)
 size_num_powerbin = np.histogram(avalanche_sizes, bins=np.logspace(0, np.log10(max(avalanche_sizes)), base=10.0), density=False)[0]
 size_num_powerbin_edges = np.histogram(avalanche_sizes, bins=np.logspace(0, np.log10(max(avalanche_sizes)), base=10.0), density=False)[1]
 #length_num_powerbin = np.histogram(avalanche_sizes, bins=np.logspace(0, max(avalanche_sizes), base=10.0))[0]
-plt.loglog(np.linspace(0,max(avalanche_sizes), num=len(size_num_powerbin)), size_num_powerbin,'o',basex=10,basey=10)
+#plt.loglog(np.linspace(0,max(avalanche_sizes), num=len(size_num_powerbin)), size_num_powerbin,'o',basex=10,basey=10)
+plt.loglog(size_num_powerbin_edges[1:], size_num_powerbin,'o',basex=10,basey=10)
 #plt.xlim(-1, max(avalanche_lengths)+100) 
 plt.axvline(x=node_num,linestyle='--',color="r") # node_nr should be the end of power law relationship
 #plt.loglog(length_num_powerbin,'o',basex=10,basey=10)
-plt.title('avalanche sizes, nodes:'+ str(node_num) + '\n exp:'+ str(experiment_num) + '\n steps:' + str(t) + '\n sigma:' + str(sigma))
+plt.title('avalanche sizes, nodes:'+ str(node_num) + '\n exp:'+ str(experiment_num) + '\n steps:' + str(t) + '\n sigma:' + str(sigma) + '\n p_spont:' + str(p_spontaneous))
 
 plt.show()
-print("size_num_powerbin: \n", length_num_powerbin)
+#print("size_num_powerbin: \n", length_num_powerbin)
 
 
 #print("avalanche lengths: \n", avalanche_lengths)
@@ -364,11 +367,20 @@ plt.hist(avalanche_lengths,bins=np.logspace(0,log_max_frames,base=log_plot_base)
 plt.xscale('log',basex=log_plot_base)
 plt.yscale('log',basey=log_plot_base)
 plt.axvline(x=node_num,linestyle='--',color="r") # node_nr should be the end of power law relationship
-plt.title('Avalanche frame lengths histogram in log-log axes\n')
+plt.title('avalanche lengths, nodes:'+ str(node_num) + '\n exp:'+ str(experiment_num) + '\n steps:' + str(t) + '\n sigma:' + str(sigma) + '\n p_spont:' + str(p_spontaneous))
 plt.show()
 
 
-
+#Generating log-log plot, Avalanche frame lengths histogram
+log_plot_base = 10
+log_max_frames=np.log(max(avalanche_sizes))/np.log(log_plot_base)
+# Define the upper border for x axis bins                
+plt.hist(avalanche_sizes,bins=np.logspace(0,log_max_frames,base=log_plot_base))
+plt.xscale('log',basex=log_plot_base)
+plt.yscale('log',basey=log_plot_base)
+plt.axvline(x=node_num,linestyle='--',color="r") # node_nr should be the end of power law relationship
+plt.title('avalanche sizes, nodes:'+ str(node_num) + '\n exp:'+ str(experiment_num) + '\n steps:' + str(t) + '\n sigma:' + str(sigma) + '\n p_spont:' + str(p_spontaneous))
+plt.show()
 
 
 
