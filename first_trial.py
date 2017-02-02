@@ -30,18 +30,24 @@ sigma=1
 time_steps=200 # How many times we transmit
 spont_prob=0.001 # Proabability of  spontaneous activation of connections
 
+single_input_mode=True # No spontaneous activity, give a single input, observe the avalanches
+
 plot_and_save=False # Should we plot and save the activation patterns? 
                     # Won't be neccesary for generating data for log-log plots
                     
-number_of_simulations=20000   # Make sure plot_and_save is False if you're running many simulations.                    
+number_of_simulations=2000   # Make sure plot_and_save is False if you're running many simulations.                    
                     
 log_plot_base=10    # Changes the base of the log-log plots on both axes
                     # Any base should give the same results
                     
-uniform_tr_prob=False # In the paper, they have used 1/sigma for all transmission probabilities
+uniform_tr_prob=True # In the paper, they have used 1/sigma for all transmission probabilities
                       # trying with the same method. Our normal method generates a lot of variation                
 
-#%% Functions
+#%% Functions and setup
+
+if single_input_mode:
+    spont_prob=0
+
 def set_array(node_nr):     # Function to set an array of empty arrays
     a=[[]for a in range(node_nr)]
     return a
@@ -88,13 +94,18 @@ all_avalanche_frame_lengths=[]
 
 
 if plot_and_save and number_of_simulations>1: # Many write cycles is undesirable, catch if this happens
-    print('Plot and save is active and many simulations will be run. \nThis will write many times on your disk with no result. Please turn off plotting.')
-    input('Press ENTER to continue with one round of simulation or CTRL+C to stop the script.\n')
+    print('Plot and save is active and many simulations will be run.')
+    print('This will write many times on your disk with no result.')
+    print('Please turn off plotting for simulations.')
+
+    input('\nPress ENTER to continue with one round of simulation or CTRL+C to stop the script.\n')
     number_of_simulations=1
+    
+    print('Plotting.')
     
 #%%
 for i in range(number_of_simulations): 
-    #%% Generating the network
+    ## Generating the network
     nodes=set_array(node_nr)
     # Nodes list will contain lists indices of connected nodes to each element
     
@@ -106,27 +117,27 @@ for i in range(number_of_simulations):
         nodes[i]=a[:connections+1]
         # We take one more than needed, in case one of the indices point to the neuron itself
         
-        flag=True
+        tr_prob_setup_flag=True
         for j in range(connections):
             if nodes[i][j]==i:
-                flag=False
+                tr_prob_setup_flag=False
                 nodes[i].remove(i)
                 # Remove self-connection
-        if flag:
+        if tr_prob_setup_flag:
             del nodes[i][-1]
             # If we removed no self-connections, delete the extra index at the end.
     
-    #%% Setting up transmission probabilities        
+    ## Setting up transmission probabilities        
     # We established a recurrent network, we need to establish transmission proabability for each connection
-    flag=True
+    tr_prob_setup_flag=True
     
     if uniform_tr_prob: # The way it is used in the paper is uniform, all connections have equal proabability transmission
-        flag=False
+        tr_prob_setup_flag=False
         tr_probabilities=[[sigma/connections for j in range(connections)] for i in range(node_nr)]
     
     
     prob_iteration_count=0
-    while flag:
+    while tr_prob_setup_flag:
         tr_probabilities=set_array(node_nr)
         for i in range(node_nr):
             divider=list(np.sort(np.random.random_sample(connections-1)))
@@ -144,15 +155,15 @@ for i in range(number_of_simulations):
                 if tr_probabilities[i][k]>1:
                     all_less_than1=False
         if all_less_than1:
-            flag=False
+            tr_prob_setup_flag=False
         if prob_iteration_count>10000: # Deals with the case that C and sigma are inappropriate, prevents infinite loop
             raise ValueError('More than 10.000 iterations when setting up probabilities, terminating. There are >1 probabilities.')
             break
         prob_iteration_count+=1
-    #del j,k,a,divider,flag
+    #del j,k,a,divider,tr_prob_setup_flag
     # The network is set up with required properties at this point
         
-    #%% Incorporating time and inputs
+    ## Incorporating time and inputs
     
     outputs=list(np.zeros(node_nr)) # Holds the state of each node.
     activated=[]
@@ -161,6 +172,9 @@ for i in range(number_of_simulations):
         
         inputs=outputs # The outputs of the previous iteration are inputs of current.
         outputs=list(np.zeros(node_nr)) 
+        
+        if single_input_mode and t==0:
+            inputs[np.random.randint(0,node_nr-1)]=1 # Pick a random node and activate it in the first frame
         
         for i in range(node_nr):
             for k in range(connections):
@@ -172,7 +186,7 @@ for i in range(number_of_simulations):
             if outputs[i]:
                 activated.append([t,i])   
                 
-        #%% Plotting individual frames
+        ## Plotting individual frames
         
         # Plot individial frames & save img for each round
         if plot_and_save:
@@ -188,12 +202,13 @@ for i in range(number_of_simulations):
         # Use ImageJ to generate .avi file from the images.
         # Also possible with cv2 or matplotlib but requires more work.
  
-#%% Gathering avalanches        
-    avalanche_frame_lengths,avalanche_sizes=get_avalanches(activated)    
-    all_avalanche_frame_lengths=all_avalanche_frame_lengths+avalanche_frame_lengths
-    all_avalanche_sizes=all_avalanche_sizes+avalanche_sizes
+    ## Gathering avalanches        
+    if not activated == []: # There is a chance that no avalanches are generated in single input mode
+        avalanche_frame_lengths,avalanche_sizes=get_avalanches(activated)    
+        all_avalanche_frame_lengths=all_avalanche_frame_lengths+avalanche_frame_lengths
+        all_avalanche_sizes=all_avalanche_sizes+avalanche_sizes
     
-print("{:<5} simulations ran, {:<5} frame lengths were generated.".format(number_of_simulations,len(avalanche_frame_lengths)))    
+print("{} simulations ran, {} frame lengths were generated.".format(number_of_simulations,len(all_avalanche_frame_lengths)))    
 
 #%% Generating log-log plot, Avalanche frame lengths histogram
 if not plot_and_save:

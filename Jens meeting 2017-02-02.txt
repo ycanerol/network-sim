@@ -1,0 +1,13 @@
+use only one seed, instead of spontaneous activation
+this is proabably the reason log log plot wasn’t expected
+
+spontaneous activity and subsample, is the next step
+take the first 10 for subsample
+
+10x10 nodes
+
+bump at t for frame lengths right after linear part
+t ~ 1/h
+h: spontaneous activation
+
+t vs h plot should look monotonous, it’s an interesting thing to see
