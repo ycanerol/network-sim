@@ -22,7 +22,7 @@ from random import shuffle
 # Initialization
 # Enter and change parameters here
 
-node_nr=64 # Should be a square for plotting
+node_nr=144 # Should be a square for plotting
 connections=4   # Defined as C in the paper
 sigma=1
 
@@ -35,7 +35,7 @@ single_input_mode=True # No spontaneous activity, give a single input, observe t
 plot_and_save=False # Should we plot and save the activation patterns? 
                     # Won't be neccesary for generating data for log-log plots
                     
-number_of_simulations=2000   # Make sure plot_and_save is False if you're running many simulations.                    
+number_of_simulations=20000   # Make sure plot_and_save is False if you're running many simulations.                    
                     
 log_plot_base=10    # Changes the base of the log-log plots on both axes
                     # Any base should give the same results
@@ -212,6 +212,12 @@ print("{} simulations ran, {} frame lengths were generated.".format(number_of_si
 
 #%% Generating log-log plot, Avalanche frame lengths histogram
 if not plot_and_save:
+    
+    if single_input_mode:
+        mode='Single input mode'
+    else:
+        mode='Spontaneous activation mode'
+    
     log_max_frames=np.log(max(all_avalanche_frame_lengths))/np.log(log_plot_base)
     # Define the upper border for x axis bins                
     plt.hist(all_avalanche_frame_lengths,bins=np.logspace(0,log_max_frames,base=log_plot_base))
@@ -221,7 +227,7 @@ if not plot_and_save:
     plt.ylabel('Number of occurences')
     plt.axvline(x=node_nr,linestyle='--',color="r",label='Node number') # node_nr should be the end of power law relationship
     plt.suptitle('Avalanche frame lengths histogram in log-log axes',fontsize=12,x=0.5,y=1.05)
-    plt.title('$\sigma$ = {}, Number of runs= {}, Number of nodes= {}\n Time steps= {} ,Connection per node= {}'.format(sigma,number_of_simulations,node_nr,time_steps,connections),fontsize=10)
+    plt.title('$\sigma$ = {}, Number of runs= {}, Number of nodes= {}\n Time steps= {} ,Connection per node= {}, {}'.format(sigma,number_of_simulations,node_nr,time_steps,connections,mode),fontsize=9)
     plt.show()
     
         #%% log-log plot for Avalanche sizes
@@ -234,5 +240,5 @@ if not plot_and_save:
     plt.yscale('log',basey=log_plot_base)
     #plt.axvline(x=node_nr,linestyle='--',color="r") # Line should be somewhere other than node_nr but where?
     plt.suptitle('Avalanche sizes histogram in log-log axes',fontsize=12,x=0.5,y=1.05)
-    plt.title('$\sigma$ = {}, Number of runs= {}, Number of nodes= {}\n Time steps= {} ,Connection per node= {}'.format(sigma,number_of_simulations,node_nr,time_steps,connections),fontsize=10)
+    plt.title('$\sigma$ = {}, Number of runs= {}, Number of nodes= {}\n Time steps= {} ,Connection per node= {}, {}'.format(sigma,number_of_simulations,node_nr,time_steps,connections,mode),fontsize=9)
     plt.show()
