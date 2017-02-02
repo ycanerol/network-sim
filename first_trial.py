@@ -17,6 +17,7 @@ Based off of Beggs Plenz 2003 and Beggs Haldemann 2005 papers
 import numpy as np
 import matplotlib.pyplot as plt
 from random import shuffle
+from datetime import datetime
 
 #%%
 # Initialization
@@ -34,8 +35,10 @@ single_input_mode=True # No spontaneous activity, give a single input, observe t
 
 plot_and_save=False # Should we plot and save the activation patterns? 
                     # Won't be neccesary for generating data for log-log plots
+images_savedir='/Users/ycan/Documents/projects/network-sim-pics/'
+
                     
-number_of_simulations=20000   # Make sure plot_and_save is False if you're running many simulations.                    
+number_of_simulations=2000   # Make sure plot_and_save is False if you're running many simulations.                    
                     
 log_plot_base=10    # Changes the base of the log-log plots on both axes
                     # Any base should give the same results
@@ -92,6 +95,7 @@ def get_avalanches(array):  # Returns sizes and length (in number of frames) of 
 all_avalanche_sizes=[]
 all_avalanche_frame_lengths=[]
 
+execution_timer=datetime.now() # To see how long simulations or plotting takes
 
 if plot_and_save and number_of_simulations>1: # Many write cycles is undesirable, catch if this happens
     print('Plot and save is active and many simulations will be run.')
@@ -194,8 +198,6 @@ for i in range(number_of_simulations):
             img = plt.matshow(np.reshape(outputs,[node_nr_sqrt,node_nr_sqrt]), cmap="Greys")
             # Convert to a square matrix and plot      
             
-            images_savedir='/Users/ycan/Documents/projects/network-sim-pics/'
-            
             plt.savefig(images_savedir+"{0:0>3}".format(str(t))+'.jpg')
             plt.close()
         
@@ -207,8 +209,9 @@ for i in range(number_of_simulations):
         avalanche_frame_lengths,avalanche_sizes=get_avalanches(activated)    
         all_avalanche_frame_lengths=all_avalanche_frame_lengths+avalanche_frame_lengths
         all_avalanche_sizes=all_avalanche_sizes+avalanche_sizes
-    
-print("{} simulations ran, {} frame lengths were generated.".format(number_of_simulations,len(all_avalanche_frame_lengths)))    
+#%%
+runtime=str(datetime.now()-execution_timer).split('.')[0] # How long the simulations took      
+print("{} simulations ran, duration: {}".format(number_of_simulations,runtime))    
 
 #%% Generating log-log plot, Avalanche frame lengths histogram
 if not plot_and_save:
