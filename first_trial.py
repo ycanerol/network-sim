@@ -38,7 +38,7 @@ plot_and_save=False # Should we plot and save the activation patterns?
 images_savedir='/Users/ycan/Documents/projects/network-sim-pics/'
 
                     
-number_of_simulations=20000   # Make sure plot_and_save is False if you're running many simulations.                    
+number_of_simulations=200000   # Make sure plot_and_save is False if you're running many simulations.                    
                     
 log_plot_base=10    # Changes the base of the log-log plots on both axes
                     # Any base should give the same results
@@ -177,9 +177,12 @@ for i in range(number_of_simulations):
         inputs=outputs # The outputs of the previous iteration are inputs of current.
         outputs=list(np.zeros(node_nr)) 
         
-        if single_input_mode and t==0:
-            inputs[np.random.randint(0,node_nr-1)]=1 # Pick a random node and activate it in the first frame
-        
+        if single_input_mode:
+            if t==0:
+                inputs[np.random.randint(0,node_nr-1)]=1 # Pick a random node and activate it in the first frame
+            elif inputs==list(np.zeros(node_nr)): 
+                break # Spontaneous activation prob. is zero so if we're out of an avalanche, stop looking for more
+                
         for i in range(node_nr):
             for k in range(connections):
                 if np.random.random()<spont_prob:              
@@ -232,7 +235,7 @@ if not plot_and_save:
     #plt.axvline(x=node_nr,linestyle='--',color="r",label='Node number') # node_nr should be the end of power law relationship
     plt.suptitle('Avalanche frame lengths histogram in log-log axes',fontsize=12,x=0.5,y=.97)
     plt.title('$\sigma$ = {}, Number of runs= {}, Number of nodes= {}\n Time steps= {}, Connection per node= {}, {}'.format(sigma,number_of_simulations,node_nr,time_steps,connections,mode),fontsize=9)
-    plt.savefig('/Users/ycan/Desktop/framelengths.png',format='png',dpi=400)
+    plt.savefig('/Users/ycan/Desktop/framelengths_highres.png',format='png',dpi=400)
     plt.show()
     
         #%% log-log plot for Avalanche sizes
@@ -247,5 +250,5 @@ if not plot_and_save:
     #plt.axvline(x=node_nr,linestyle='--',color="r") # Line should be somewhere other than node_nr but where?
     plt.suptitle('Avalanche sizes histogram in log-log axes',fontsize=12,x=0.5,y=0.97)
     plt.title('$\sigma$ = {}, Number of runs= {}, Number of nodes= {}\n Time steps= {}, Connection per node= {}, {}'.format(sigma,number_of_simulations,node_nr,time_steps,connections,mode),fontsize=9)
-    plt.savefig('/Users/ycan/Desktop/avalanchesizes.png',format='png',dpi=400)
+    plt.savefig('/Users/ycan/Desktop/avalanchesizes_highres.png',format='png',dpi=400)
     plt.show()
