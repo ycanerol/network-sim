@@ -23,7 +23,7 @@ from datetime import datetime
 # Initialization
 # Enter and change parameters here
 
-node_nr=64 # Should be a square for plotting
+node_nr=400 # Should be a square for plotting
 connections=4   # Defined as C in the paper
 sigma=1
 
@@ -31,14 +31,14 @@ sigma=1
 time_steps=200 # How many times we transmit
 spont_prob=0.001 # Proabability of  spontaneous activation of connections
 
-single_input_mode=True # No spontaneous activity, give a single input, observe the avalanches
+single_input_mode=False # No spontaneous activity, give a single input, observe the avalanches
 
 plot_and_save=False # Should we plot and save the activation patterns? 
                     # Won't be neccesary for generating data for log-log plots
 images_savedir='/Users/ycan/Documents/projects/network-sim-pics/'
 
                     
-number_of_simulations=200000   # Make sure plot_and_save is False if you're running many simulations.                    
+number_of_simulations=20000   # Make sure plot_and_save is False if you're running many simulations.                    
                     
 log_plot_base=10    # Changes the base of the log-log plots on both axes
                     # Any base should give the same results
